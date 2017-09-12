@@ -4,11 +4,12 @@ Create a serverless Slack Glossary with AWS Lambda, API Gateway, DynamoDB, and C
 
 ## What it does ##
 This app allows you to build a internal glossary of terms at your organization, easily accessed via a Slack slash command. By default all responses are private.
-```/glossary help``` will return the entry for "help" and this can be customized in the last step of these instructions
-```/glossary list``` will return all the entries in the glossary
-```/glossary <term>``` will return the entry for the submitted term, if it exists
-```/glossary add <term> <definition>``` will either add a new term, or update an existing term definition
-```/glossary public <term>``` will post the term entry publicly
+
+* ```/glossary help``` will return the entry for "help" and this can be customized in the last step of these instructions
+* ```/glossary list``` will return all the entries in the glossary
+* ```/glossary <term>``` will return the entry for the submitted term, if it exists
+* ```/glossary add <term> <definition>``` will either add a new term, or update an existing term definition
+* ```/glossary public <term>``` will post the term entry publicly
 
 ## Install Serverless and provision AWS
   
