@@ -19,7 +19,7 @@ This app allows you to build a internal glossary of terms at your organization, 
   ```
   npm install -g serverless
   ```
-3. Install The Serverless Slack App Template and provision all AWS services
+3. Install The Serverless Slack Glossary Template and provision all AWS services. Note that part of this process is copying serverless.template.yaml to serverless.yaml
 
   ```
   serverless install --url https://github.com/dshackith/serverless-slack-glossary
@@ -33,10 +33,9 @@ This app allows you to build a internal glossary of terms at your organization, 
 ## Create a Slack App
 1. Create a new [Slack App](https://api.slack.com/apps/new)
 2. Use the generated **POST** url for Slack's slash commands, events, and interactive messages
-3. Update the [serverless.yml](serverless.yml) with your new Slack App keys
+3. Update serverless.yml with your new Slack App keys
 
-[Slack](https://api.slack.com/apps) | [Serverless](serverless.yml)
-:---:|:---:
+[Slack](https://api.slack.com/apps)
 
 
 
