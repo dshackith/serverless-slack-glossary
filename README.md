@@ -15,7 +15,7 @@ Create a serverless Slack Glossary with AWS Lambda, API Gateway, DynamoDB, and C
 
   ```
   serverless install --url https://github.com/dshackith/serverless-slack-glossary
-  cd serverless-slack-app
+  cd serverless-slack-glossary
   npm install
   cp serverless.template.yml serverless.yml
   serverless deploy
