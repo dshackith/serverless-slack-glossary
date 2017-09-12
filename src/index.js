@@ -24,8 +24,6 @@ function getDefinition(term) {
       "termlower": term.toLowerCase()
     }
   };
-  console.log(params)
-  console.log("Running get...")
   return docClient.get(params).promise();
 };
 
@@ -47,8 +45,6 @@ function getGlossary() {
   var params = {
     TableName: "Glossary"
     };
-  console.log(params)
-  console.log("Running scan...")
   return docClient.scan(params).promise();
 };
 
@@ -62,8 +58,6 @@ function addEntry(word,def) {
       termlower: wordLower
     }
     };
-  console.log(params)
-  console.log("Adding term:",word)
   return docClient.put(params).promise();
 };
 
@@ -75,56 +69,34 @@ function removeEntry(word) {
       termlower: wordLower
     }
   };
-  console.log(params)
-  console.log("Removing term:",word)
   return docClient.delete(params).promise();
 };
 
 // Slash Command handler
 
-slack.on('/karma', (msg, bot) => {
-  let message = {
-   //text: '```' + JSON.stringify(msg.text, null, 4) + '```'
-   text: "@"+msg.user_name + " has given 0 karma."
-  };
-  bot.reply(message);
-}
-);
-
-
-
 slack.on('/glossary', (msg, bot) => {
-  // let params = {
-  //   Key: { def: msg.text },
-  //   TableName: Glossary
-  // }
+  
   var term = msg.text;
   var definition = "";
   var glossary = "";
-  var messageText = "";
   var message = {
-    text: "Let me see... nope. Could not find that."
+    text: ""
   };
 
   switch (true) {
     case /^list/i.test(term):
       getGlossary().then(function(data) {
-        console.log("Scan results:", JSON.stringify(data, null, 2));
         var glossaryRaw = data;
-        // console.log("Glossary:", glossary);
         glossaryRaw.Items.forEach(function(entry) {
-          if (entry.term != "help") {
+          if (entry.termlower != "help") {
             glossary += "*"+entry.term +"*:\n"+entry.definition+"\n"
           }
         });
-        messageText = glossary;
-        console.log("Message text:", messageText);
         message = { 
-          text: messageText
+          text: glossary
         };
         bot.replyPrivate(message);
       }).catch((error) =>{
-        console.error("Something went wrong", error);
         message = { 
           text: "Something went wrong:\n"+"```"+ error+ "```"
         };
@@ -132,20 +104,16 @@ slack.on('/glossary', (msg, bot) => {
       });
       break;
     case /^add\s\w+/i.test(term): 
-      console.log("Term was added:",term);
       var newEntry = prepEntry(term," ",2);
-      console.log("New Entry:",newEntry);
       var word = newEntry[1];
       var newDef = newEntry[2];
       if (word) {
         addEntry(word,newDef).then(function(data) {
-          console.log("Adding new entry:",data)
           message = { 
             text: "Added the following entry:\n*"+word+"*:\n"+newDef
           };
           bot.replyPrivate(message);
         }).catch((error) => {
-          console.error("Something went wrong", error);
           message = { 
             text: "Something went wrong:\n"+"```"+ error+ "```"
           };
@@ -156,12 +124,10 @@ slack.on('/glossary', (msg, bot) => {
     case /^remove\s\w/i.test(term):
       var badTerm = getTerm(term)
       removeEntry(badTerm).then(function(data) {
-        console.log("Removing entry:",data)
         message = { 
           text: "Removed the following entry:\n*"+badTerm+"*"
         };
       }).catch((error)=> {
-        console.error("Something went wrong", error);
         message = { 
           text: "Something went wrong:\n"+"```"+ error+ "```"
         };
@@ -171,13 +137,10 @@ slack.on('/glossary', (msg, bot) => {
     case /^public\s\w/i.test(term):
       var publicTerm = getTerm(term)
       getDefinition(publicTerm).then(function(data) {
-        console.log("Definition results:", JSON.stringify(data, null, 2));
         if (data.Item) {
           definition = data.Item.definition;
           var returnedTerm = data.Item.term;
-          console.log("Definition:", definition);
           messageText = "*" + returnedTerm + "*:\n" + definition;
-          console.log("Message text:", messageText);
           message = { 
             text: messageText
           };
@@ -189,8 +152,6 @@ slack.on('/glossary', (msg, bot) => {
           bot.replyPrivate(message);
         }
       }).catch((error) =>{
-        console.error("Something went wrong", error);
-
         message = { 
           text: "Something went wrong:\n"+"```"+ error+ "```"
         };
@@ -199,13 +160,10 @@ slack.on('/glossary', (msg, bot) => {
       break;
     case /^\w/i.test(term):
       getDefinition(term).then(function(data) {
-        console.log("Definition results:", JSON.stringify(data, null, 2));
         if (data.Item) {
           definition = data.Item.definition;
           var returnedTerm = data.Item.term;
-          console.log("Definition:", definition);
           messageText = "*" + returnedTerm + "*:\n" + definition;
-          console.log("Message text:", messageText);
           message = { 
             text: messageText
           };
@@ -217,34 +175,18 @@ slack.on('/glossary', (msg, bot) => {
           bot.replyPrivate(message);
         }
       }).catch((error) =>{
-        console.error("Something went wrong", error);
-
         message = { 
           text: "Something went wrong:\n"+"```"+ error+ "```"
         };
         bot.replyPrivate(message);
       });
       break;
+    case /^$/i.test(term):
+      message = { 
+        text: "You need to provide a term or a command to use this slash command"
+      };
+      bot.replyPrivate(message);
+      break;
   }
-  
- if (term) 
-  {
-    
-  } 
-  else 
-  {
-    message = { 
-      text: "You need to provide a term or a command to use this slash command"
-    };
-    bot.replyPrivate(message);
-  }
-}
-);
-
-
-// Reaction Added event handler
-slack.on('reaction_added', (msg, bot) => {
-  bot.reply({ 
-    text: ':wave:' 
-  });
 });
+
