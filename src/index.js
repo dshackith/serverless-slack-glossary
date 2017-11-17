@@ -82,6 +82,7 @@ slack.on('/glossary', (msg, bot) => {
   var message = {
     text: ""
   };
+  var messageText = "";
 
   switch (true) {
     case /^list/i.test(term):
@@ -140,7 +141,7 @@ slack.on('/glossary', (msg, bot) => {
         if (data.Item) {
           definition = data.Item.definition;
           var returnedTerm = data.Item.term;
-          messageText = "*" + returnedTerm + "*:\n" + definition;
+          var messageText = "*" + returnedTerm + "*:\n" + definition;
           message = { 
             text: messageText
           };
